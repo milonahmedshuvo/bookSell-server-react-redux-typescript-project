@@ -43,10 +43,15 @@ async function run() {
 
    app.get("/getPublicationyear", async (req, res) => {
       const filter = {}
-      const year = await allBooksCollection.find(filter).project({publication: 1}).toArray()
+      const year = await allBooksCollection.find(filter).project({publication: 1, _id: 0}).toArray()
       res.send(year)
    })
 
+   app.get("/getGenre", async (req, res) => {
+    const filter = {}
+    const genre = await allBooksCollection.find(filter).project({genre: 1}).toArray()
+    res.send(genre)
+   })
 
 
   } finally {
