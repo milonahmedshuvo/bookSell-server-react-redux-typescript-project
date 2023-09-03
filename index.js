@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express')
 const app = express()
 const port = 5000
@@ -41,6 +41,15 @@ async function run() {
        res.send(allBooks)
    })
 
+  //  get all book products 
+  app.get("/allbookproduct", async (req, res) => {
+    const filter = {}
+    const result = (await allBooksCollection.find(filter).toArray()).reverse()
+    res.send(result)
+  })
+
+
+
    app.get("/getPublicationyear", async (req, res) => {
       const filter = {}
       const year = await allBooksCollection.find(filter).project({publication: 1, _id: 0}).toArray()
@@ -53,6 +62,57 @@ async function run() {
     res.send(genre)
    })
 
+   app.post("/addnewbook", async (req, res) => {
+       const data = req.body
+       const result = await allBooksCollection.insertOne(data)
+       res.send(result)
+   })
+
+  //  oneIdProduct 
+  app.get("/getOneProdcut/:id", async (req, res) => {
+      const id = req.params.id
+      const filter = {_id: new ObjectId(id)}
+      const oneproduct = await allBooksCollection.findOne(filter)
+      res.send(oneproduct)
+  })
+
+
+  // update comments 
+  app.patch("/updateComments/:id", async (req, res) => {
+      const id = req.params.id 
+      const query = { _id: new ObjectId(id)}
+      const data = req.body.proverty
+      console.log(data)
+      const result = await allBooksCollection.updateOne(query, {$push: {comments: data} })
+
+      if(result.modifiedCount !== 1 ){
+        res.send({error: "Sorry not comment update"})
+        return
+      }
+
+      res.send(result)
+  })
+
+
+
+  
+
+  // use delete method 
+  app.delete("/bookDelete/:id", async (req, res) => {
+    const id = req.params.id 
+    const filter = {_id : new ObjectId(id)}
+    const result= allBooksCollection.deleteOne(filter)
+    res.send(result)
+  })
+
+
+
+
+
+
+
+
+   
 
   } finally {
     
