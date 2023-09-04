@@ -98,12 +98,55 @@ async function run() {
   
 
   // use delete method 
-  app.delete("/bookDelete/:id", async (req, res) => {
+  app.delete("/:id", async (req, res) => {
     const id = req.params.id 
     const filter = {_id : new ObjectId(id)}
-    const result= allBooksCollection.deleteOne(filter)
+    console.log(filter)
+    const result= await allBooksCollection.deleteOne(filter)
+    console.log("result", result)
     res.send(result)
   })
+
+
+
+
+
+
+
+
+// book update 
+app.patch("/bookupdate/:id", async (req, res) => {
+    const id = req.params.id 
+    const filter = {_id: new ObjectId(id)}
+    // get data from fronend
+    const body = req.body
+    const image = req.body.image
+    const title = req.body.title
+    const genre = req.body.genre
+    const email = req.body.email
+    const author = req.body.author
+    const publication = req.body.publication
+    
+    const result = await allBooksCollection.updateOne(filter, {$set: { 
+      image:image, 
+      title:title,
+      genre: genre,
+      email:email,
+      author:author,
+      publication: publication
+     }
+     }  
+      )
+
+      if(result.modifiedCount !== 1){
+        res.send({massege: "Not modifiedCount book"})
+      }
+
+      res.send(result)  
+
+    console.log(body)
+
+})
 
 
 
